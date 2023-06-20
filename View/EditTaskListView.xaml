@@ -1,0 +1,64 @@
+﻿<Window x:Class="ToDoList.View.EditTaskListView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ToDoList.View"
+        mc:Ignorable="d"
+        Title="Изменение группы задач" Height="180" Width="280">
+    <Window.Resources>
+        <Style x:Key="RoundBorder">
+            <Style.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="14" />
+                </Style>
+            </Style.Resources>
+        </Style>
+        <Style x:Key="NoBorder" TargetType="ListBox">
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style x:Key="RoundButton" TargetType="Button" BasedOn="{StaticResource RoundBorder}">
+            <Style.Setters>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Background" Value="LightGray"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Name="border" BorderThickness="2" Padding="4" BorderBrush="Black" Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="White" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style.Setters>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="AliceBlue"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <StackPanel>
+            <TextBlock HorizontalAlignment="Center" FontSize="18" Text="Изменить группу задач" />
+            <StackPanel Orientation="Horizontal" Margin="6">
+                <TextBlock FontSize="14"  Margin="6, 0" Text="Название:"/>
+                <TextBox Width="127" Text="{Binding TaskListName, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="6">
+                <TextBlock FontSize="14" Margin="6, 0" Text="Сохранять выполненные задачи?"/>
+                <CheckBox IsChecked="{Binding TaskListStoreFinishedTasks, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+            <Button HorizontalAlignment="Center" Margin="0, 10" Command="{Binding EditTaskListCommand}" Style="{StaticResource RoundButton}">
+                Изменить группу
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>
