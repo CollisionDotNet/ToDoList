@@ -1,0 +1,30 @@
+[
+  {
+    "Name": "Завершенные",
+    "ActiveTasks": null,
+    "FinishedTasks": [
+      {
+        "Name": "Сдать работу",
+        "Description": null
+      }
+    ],
+    "IsFinishedTasksStored": true
+  },
+  {
+    "Name": "Работа",
+    "ActiveTasks": [],
+    "FinishedTasks": [],
+    "IsFinishedTasksStored": true
+  },
+  {
+    "Name": "Учеба",
+    "ActiveTasks": [],
+    "FinishedTasks": [
+      {
+        "Name": "Сдать работу",
+        "Description": null
+      }
+    ],
+    "IsFinishedTasksStored": true
+  }
+]
