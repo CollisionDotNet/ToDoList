@@ -42,7 +42,6 @@ namespace ToDoList.ViewModel
                     Action<object?> execute = o =>
                     {
                         Task newTask = new Task(TaskName, TaskDescription);
-                        newTask.Owner = TaskList;
                         TaskList.ActiveTasks.Add(newTask);
                         CloseView?.Invoke();
                     };

@@ -26,7 +26,7 @@ namespace ToDoList.Model
                 OnPropertyChanged(nameof(IsFinishedTasksStored));
             }
         }
-        public ObservableCollection<Task>? ActiveTasks { get; private init; }
+        public ObservableCollection<Task> ActiveTasks { get; private init; }
         private ObservableCollection<Task>? finishedTasks;
         public ObservableCollection<Task>? FinishedTasks
         {
@@ -37,35 +37,18 @@ namespace ToDoList.Model
                 OnPropertyChanged(nameof(FinishedTasks));
             }
         }
-        public TaskList(string name, bool isActiveTasksStored, bool isFinishedTasksStored)
+        public TaskList(string name, bool isFinishedTasksStored)
         {
             this.name = name;
             this.isFinishedTasksStored = isFinishedTasksStored;
-            if(isActiveTasksStored)
-                ActiveTasks = new ObservableCollection<Task>();
-            else
-                ActiveTasks = null;
+            ActiveTasks = new ObservableCollection<Task>();
             if (isFinishedTasksStored)
                 FinishedTasks = new ObservableCollection<Task>();
             else
                 FinishedTasks = null;
-            if (ActiveTasks != null)
-            {
-                foreach (Task task in ActiveTasks)
-                {
-                    task.Owner = this;
-                }
-            }
-            if (FinishedTasks != null)
-            {
-                foreach (Task task in FinishedTasks)
-                {
-                    task.Owner = this;
-                }
-            }
         }
         [JsonConstructor]
-        public TaskList(string name, bool isFinishedTasksStored, ObservableCollection<Task>? activeTasks, ObservableCollection<Task>? finishedTasks)
+        public TaskList(string name, bool isFinishedTasksStored, ObservableCollection<Task> activeTasks, ObservableCollection<Task> finishedTasks)
         {
             this.name = name;
             this.isFinishedTasksStored = isFinishedTasksStored;
@@ -74,20 +57,6 @@ namespace ToDoList.Model
                 this.finishedTasks = finishedTasks;
             else
                 this.finishedTasks = null;
-            if (ActiveTasks != null)
-            {
-                foreach (Task task in ActiveTasks)
-                {
-                    task.Owner = this;
-                }
-            }
-            if (FinishedTasks != null)
-            {
-                foreach (Task task in FinishedTasks)
-                {
-                    task.Owner = this;
-                }
-            }
         }      
         public event PropertyChangedEventHandler? PropertyChanged;
         public void OnPropertyChanged(string prop = "")

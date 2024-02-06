@@ -41,7 +41,7 @@ namespace ToDoList.ViewModel
                 {
                     Action<object?> execute = o =>
                     {
-                        TaskList newTaskList = new TaskList(TaskListName, true, TaskListStoreFinishedTasks);
+                        TaskList newTaskList = new TaskList(TaskListName, TaskListStoreFinishedTasks);
                         TaskLists.Add(newTaskList);
                         CloseView?.Invoke();
                     };

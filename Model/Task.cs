@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Text.Json.Serialization;
 
 namespace ToDoList.Model
 {
@@ -25,9 +24,7 @@ namespace ToDoList.Model
                 description = value;
                 OnPropertyChanged(nameof(Description));
             }
-        }
-        [JsonIgnore]
-        public TaskList? Owner { get; set; }
+        }       
         public Task(string name, string? description)
         {
             this.name = name;

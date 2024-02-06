@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ToDoList.View"
         mc:Ignorable="d"
-        Title="Изменение группы задач" Height="180" Width="280">
+        Title="Task group editing" Height="180" Width="280">
     <Window.Resources>
         <Style x:Key="RoundBorder">
             <Style.Resources>
@@ -46,18 +46,22 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <StackPanel>
-            <TextBlock HorizontalAlignment="Center" FontSize="18" Text="Изменить группу задач" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="51*"/>
+            <ColumnDefinition Width="229*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.ColumnSpan="2">
+            <TextBlock HorizontalAlignment="Center" FontSize="18" Text="Edit task group" />
             <StackPanel Orientation="Horizontal" Margin="6">
-                <TextBlock FontSize="14"  Margin="6, 0" Text="Название:"/>
+                <TextBlock FontSize="14"  Margin="6,-3,6,0" Text="Name:" VerticalAlignment="Center"/>
                 <TextBox Width="127" Text="{Binding TaskListName, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="6">
-                <TextBlock FontSize="14" Margin="6, 0" Text="Сохранять выполненные задачи?"/>
-                <CheckBox IsChecked="{Binding TaskListStoreFinishedTasks, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock FontSize="14" Margin="6, 0" Text="Save done tasks?" VerticalAlignment="Center"/>
+                <CheckBox IsChecked="{Binding TaskListStoreFinishedTasks, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="0,1,0,0"/>
             </StackPanel>
             <Button HorizontalAlignment="Center" Margin="0, 10" Command="{Binding EditTaskListCommand}" Style="{StaticResource RoundButton}">
-                Изменить группу
+                Edit group
             </Button>
         </StackPanel>
     </Grid>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ToDoList.View"
         mc:Ignorable="d"
-        Title="Список дел" SizeToContent="WidthAndHeight" MinWidth="520" MinHeight="300" ResizeMode="NoResize">
+        Title="To Do List" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
     <Window.Resources>
         <Style x:Key="RoundBorder">
             <Style.Resources>
@@ -45,22 +45,22 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    <Grid Margin="0, 0, 0, 10">
+    <Grid Width="Auto" Margin="0, 0, 0, 10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="1.5*"></ColumnDefinition>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Menu Grid.Row="0" Grid.ColumnSpan="2">
-            <MenuItem Header="Загрузить из файла" Command="{Binding LoadDataFromFileCommand}"/>
-            <MenuItem Header="Сохранить в файл" Command="{Binding SaveDataToFileCommand}"/>
+        <Menu Grid.Row="0" Grid.ColumnSpan="3">
+            <MenuItem Header="Load from file" Command="{Binding LoadDataFromFileCommand}"/>
+            <MenuItem Header="Save to file" Command="{Binding SaveDataToFileCommand}"/>
         </Menu>
         <StackPanel Grid.Column="0" Grid.Row="1" Margin="6, 0">
-            <TextBlock HorizontalAlignment="Center" FontSize="18">Группы задач</TextBlock>
+            <TextBlock HorizontalAlignment="Center" FontSize="18">Task groups</TextBlock>
             <ListBox ItemsSource="{Binding TaskLists}" SelectedItem="{Binding SelectedTaskList}" Style="{StaticResource NoBorder}" Margin="0, 6">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
@@ -77,13 +77,13 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <Button Command="{Binding OpenNewTaskListViewCommand}" Style="{StaticResource RoundButton}">
-                <Image Source="/ToDoList;component/Icons/Add.png" Width="16"/>
+                 <Image Source="/Icons/Add.png" Width="16"/>
             </Button>
         </StackPanel>
 
-        <StackPanel Grid.Column="1" Grid.Row="1" Margin="6, 0" HorizontalAlignment="Stretch">
+        <StackPanel Grid.Column="1" Grid.Row="1" Margin="6, 0">
             <TextBlock Visibility="{Binding SelectedTaskListVisibilityInversed}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">
-                Текущая группа задач
+                Current task group
             </TextBlock>
             <StackPanel Visibility="{Binding SelectedTaskListVisibility}" Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Margin="5, 0" Text="{Binding Path=SelectedTaskList.Name}"/>
@@ -95,8 +95,8 @@
                 </Button>
             </StackPanel>
 
-            <TextBlock Visibility="{Binding ActiveTasksVisibility}" HorizontalAlignment="Center" FontSize="16">Активные задачи</TextBlock>
-            <ListBox Style="{StaticResource NoBorder}" Visibility="{Binding ActiveTasksVisibility}" ItemsSource="{Binding Path=SelectedTaskList.ActiveTasks}" SelectedItem="{Binding SelectedTask}">
+            <TextBlock Visibility="{Binding SelectedTaskListVisibility}" HorizontalAlignment="Center" FontSize="16">Active tasks</TextBlock>
+            <ListBox Style="{StaticResource NoBorder}" Visibility="{Binding SelectedTaskListVisibility}" ItemsSource="{Binding Path=SelectedTaskList.ActiveTasks}" SelectedItem="{Binding SelectedTask}">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="BorderThickness" Value="1" />
@@ -111,10 +111,10 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button Visibility="{Binding ActiveTasksVisibility}" Command="{Binding OpenNewTaskViewCommand}" Style="{StaticResource RoundButton}" Margin="0,6">
+            <Button Visibility="{Binding SelectedTaskListVisibility}" Command="{Binding OpenNewTaskViewCommand}" Style="{StaticResource RoundButton}" Margin="0,6">
                 <Image Source="/ToDoList;component/Icons/Add.png" Width="16"/>
             </Button>
-            <TextBlock Visibility="{Binding FinishedTasksVisibility}" HorizontalAlignment="Center" FontSize="16">Завершенные задачи</TextBlock>
+            <TextBlock Visibility="{Binding FinishedTasksVisibility}" HorizontalAlignment="Center" FontSize="16">Done tasks</TextBlock>
             <ListBox Style="{StaticResource NoBorder}" Visibility="{Binding FinishedTasksVisibility}" ItemsSource="{Binding Path=SelectedTaskList.FinishedTasks}" SelectedItem="{Binding SelectedTask}">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
@@ -132,9 +132,9 @@
             </ListBox>
         </StackPanel>
 
-        <StackPanel Name="CurrentTaskSection" Grid.Column="2" Grid.Row="1"  Margin="6, 0" HorizontalAlignment="Stretch">
+        <StackPanel Name="CurrentTaskSection" Grid.Column="2" Grid.Row="1"  Margin="6, 0">
             <TextBlock Visibility="{Binding SelectedTaskVisibilityInversed}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18">
-                Текущая задача
+                Active task
             </TextBlock>
             <StackPanel Visibility="{Binding SelectedTaskVisibility}" Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Margin="5, 0" Text="{Binding Path=SelectedTask.Name}"/>
@@ -147,15 +147,11 @@
             </StackPanel>
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Visibility="{Binding SelectedTaskVisibility}" FontSize="14" MaxWidth="160" Text="Группа задач: "/>
-                    <TextBlock Visibility="{Binding SelectedTaskVisibility}" FontSize="14" MaxWidth="160" Text="{Binding Path=SelectedTask.Owner.Name}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
                     <TextBlock Visibility="{Binding SelectedTaskVisibility}" FontSize="14" TextWrapping="Wrap" MaxWidth="160" Text="{Binding Path=SelectedTask.Description}"/>
                 </StackPanel>
             </StackPanel>
             <Button Visibility="{Binding FinishTaskButtonVisibility}" Command="{Binding CompleteTaskCommand}" CommandParameter="{Binding SelectedTask}" Style="{StaticResource RoundButton}">
-                Завершить
+                Done
             </Button>
         </StackPanel>
     </Grid>

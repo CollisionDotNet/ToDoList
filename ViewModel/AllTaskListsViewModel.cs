@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Encodings.Web;
@@ -16,7 +17,7 @@ using ToDoList.View;
 namespace ToDoList.ViewModel
 {
     public class AllTaskListsViewModel : INotifyPropertyChanged
-    {
+    {       
         public ObservableCollection<TaskList> TaskLists { get; private set; }
         private TaskList? selectedTaskList;
         public TaskList? SelectedTaskList
@@ -27,24 +28,10 @@ namespace ToDoList.ViewModel
                 selectedTaskList = value;
                 OnPropertyChanged(nameof(SelectedTaskList));
                 OnPropertyChanged(nameof(SelectedTaskListVisibility));
-                OnPropertyChanged(nameof(ActiveTasksVisibility));
                 OnPropertyChanged(nameof(FinishedTasksVisibility));
                 OnPropertyChanged(nameof(SelectedTaskListVisibilityInversed));
             }
         }
-        private TaskList finishedTaskList;
-        public TaskList FinishedTaskList
-        {
-            get 
-            {
-                return finishedTaskList;
-            }
-            private set
-            {                
-                finishedTaskList = value;
-                OnPropertyChanged(nameof(FinishedTaskList));
-            }
-        }        
         public Visibility SelectedTaskListVisibility
         { 
             get => SelectedTaskList != null ? Visibility.Visible : Visibility.Collapsed; 
@@ -52,10 +39,6 @@ namespace ToDoList.ViewModel
         public Visibility SelectedTaskListVisibilityInversed
         {
             get => SelectedTaskList == null ? Visibility.Visible : Visibility.Collapsed;
-        }
-        public Visibility ActiveTasksVisibility
-        {
-            get => SelectedTaskList != null && SelectedTaskList.ActiveTasks != null ? Visibility.Visible : Visibility.Collapsed;
         }
         public Visibility FinishedTasksVisibility
         { 
@@ -71,7 +54,7 @@ namespace ToDoList.ViewModel
                 {
                     if (selectedTaskList == null)
                         throw new Exception("Selected task can't be specified as no task list is selected!");
-                    else if ((selectedTaskList.ActiveTasks != null && !selectedTaskList.ActiveTasks.Contains(value)) && (selectedTaskList.IsFinishedTasksStored && !selectedTaskList.FinishedTasks.Contains(value)))
+                    else if (!selectedTaskList.ActiveTasks.Contains(value) && selectedTaskList.IsFinishedTasksStored && !selectedTaskList.FinishedTasks.Contains(value))
                         throw new Exception("Selected task can't be specified as is doesn't belong to selected task list");
                 }               
                 selectedTask = value;
@@ -93,14 +76,14 @@ namespace ToDoList.ViewModel
         }
         public Visibility FinishTaskButtonVisibility
         {
-            get => SelectedTaskList != null && SelectedTask != null && SelectedTaskList.ActiveTasks != null && SelectedTaskList.ActiveTasks.Contains(SelectedTask) ? Visibility.Visible : Visibility.Collapsed;
+            get => SelectedTaskList != null && SelectedTask != null && SelectedTaskList.ActiveTasks.Contains(SelectedTask) ? Visibility.Visible : Visibility.Collapsed;
         }
         public Visibility DeleteTaskButtonVisibility
         {
             get => SelectedTaskList != null && SelectedTask != null && SelectedTaskList.IsFinishedTasksStored ? Visibility.Visible : Visibility.Collapsed;
         }
         public string? NewTaskName { get; set; }
-        #region Commands
+
         private BaseCommand? openNewTaskViewCommand;
         public BaseCommand OpenNewTaskViewCommand
         {
@@ -115,8 +98,7 @@ namespace ToDoList.ViewModel
                         NewTaskView newTaskView = new NewTaskView(SelectedTaskList);
                         newTaskView.Show();
                     };
-                    Predicate<object?> canExecute = o => SelectedTaskList != null && SelectedTaskList.ActiveTasks != null;
-                    openNewTaskViewCommand = new BaseCommand(execute, canExecute);
+                    openNewTaskViewCommand = new BaseCommand(execute, null);
                     return openNewTaskViewCommand;
                 }
             }
@@ -197,13 +179,10 @@ namespace ToDoList.ViewModel
                     {
                         Task completedTask = (Task)o;
                         SelectedTaskList.ActiveTasks.Remove(completedTask);
-                        if (SelectedTaskList.IsFinishedTasksStored)
-                        {
+                        if(SelectedTaskList.IsFinishedTasksStored)
                             SelectedTaskList.FinishedTasks.Add(completedTask);
-                            GetFinishedTasks();
-                        }
                     };
-                    Predicate<object?> canExecute = o => o != null && SelectedTaskList != null && SelectedTaskList.ActiveTasks != null && SelectedTaskList.ActiveTasks.Contains((Task)o);
+                    Predicate<object?> canExecute = o => o != null && SelectedTaskList != null && SelectedTaskList.ActiveTasks.Contains((Task)o);
                     completeTaskCommand = new BaseCommand(execute, canExecute);
                     return completeTaskCommand;
                 }
@@ -221,15 +200,12 @@ namespace ToDoList.ViewModel
                 {
                     Action<object?> execute = o =>
                     {
-                        if (MessageBox.Show("Удалить задачу?", "Удаление задачи", MessageBoxButton.YesNo, MessageBoxImage.None) == MessageBoxResult.Yes)
+                        if (MessageBox.Show("Delete task?", "Task deleting", MessageBoxButton.YesNo, MessageBoxImage.None) == MessageBoxResult.Yes)
                         {
                             Task taskToDelete = (Task)o;
                             SelectedTaskList.ActiveTasks.Remove(taskToDelete);
                             if (SelectedTaskList.IsFinishedTasksStored)
-                            { 
                                 SelectedTaskList.FinishedTasks.Remove(taskToDelete);
-                                GetFinishedTasks();
-                            }
                         }
                         
                     };
@@ -250,7 +226,7 @@ namespace ToDoList.ViewModel
                 {
                     Action<object?> execute = o =>
                     {
-                        if (MessageBox.Show("Удалить группу задач?", "Удаление группы задач", MessageBoxButton.YesNo, MessageBoxImage.None) == MessageBoxResult.Yes)
+                        if (MessageBox.Show("Delete task group?", "Deleting task group", MessageBoxButton.YesNo, MessageBoxImage.None) == MessageBoxResult.Yes)
                         {
                             TaskList taskListToDelete = (TaskList)o;
                             TaskLists.Remove(taskListToDelete);
@@ -327,14 +303,14 @@ namespace ToDoList.ViewModel
                 else
                 {
                     Action<object?> execute = o =>
-                    {
+                    {                        
                         string path = (string)o;
                         JsonSerializerOptions options = new JsonSerializerOptions()
                         {
                             WriteIndented = true,
                             Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic)
                         };
-                        var jsonSerializer = new JsonSerializer<ObservableCollection<TaskList>>(options);
+                        var jsonSerializer = new JsonSerializer<ObservableCollection<TaskList>>(options);                       
                         try
                         {
                             TaskLists = jsonSerializer.Deserialize(path) ?? new ObservableCollection<TaskList>();
@@ -344,14 +320,7 @@ namespace ToDoList.ViewModel
                         {
                             TaskLists = new ObservableCollection<TaskList>();
                         }
-                        TaskList finished = TaskLists.FirstOrDefault(taskList => taskList.Name == "Завершенные");
-                        if (finished == null)
-                        {
-                            finished = new TaskList("Завершенные", false, true);
-                            TaskLists?.Add(finished);
-                        }
-                        FinishedTaskList = finished;
-                        GetFinishedTasks();
+                        
                     };
                     Predicate<object?> canExecute = o => o is string;
                     loadDataCommand = new BaseCommand(execute, canExecute);
@@ -385,25 +354,15 @@ namespace ToDoList.ViewModel
                 }
             }
         }
-        #endregion
         public AllTaskListsViewModel()
-        {
+        {          
             LoadDataCommand.Execute("active.json");           
-        }
-
+        }                
         public event PropertyChangedEventHandler? PropertyChanged;
         public void OnPropertyChanged(string prop = "")
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
-        }
-        private void GetFinishedTasks()
-        {
-            FinishedTaskList.FinishedTasks = new ObservableCollection<Task>(TaskLists
-                .Where(taskList => taskList.FinishedTasks != null && taskList != FinishedTaskList)
-                .SelectMany(taskList => taskList.FinishedTasks)
-                .ToList());
-            OnPropertyChanged(nameof(FinishedTaskList));
         }
     }
 }
